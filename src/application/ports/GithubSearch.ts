@@ -1,15 +1,14 @@
 import type { RepositoryDomain } from "../domain/Repository";
 import type { UserDomain } from "../domain/User";
 
-export interface GithubSearchPort {
-	user(name: string): Promise<UserDomain | string>;
+export interface GithubSearchPorts {
+	user(name: string): Promise<UserDomain | Error>;
 	repository(
 		user: string,
 		repository: string,
-	): Promise<RepositoryDomain | string>;
+	): Promise<RepositoryDomain | Error>;
 }
 
 export interface GithubGatewayPort {
-	user<T>(name: string): Promise<T | string>;
-	repository<T>(user: string, repository: string): Promise<T | string>;
+	fetchGateway<T>(endpoint: string): Promise<T | null | Error>
 }

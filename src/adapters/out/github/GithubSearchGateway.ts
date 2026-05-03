@@ -2,36 +2,24 @@ import type { GithubGatewayPort } from "../../../application/ports/GithubSearch"
 
 export default class GithubSearchGateway implements GithubGatewayPort {
 	constructor(
-		private readonly apiGithubUrl: string = "https://api.github.com",
-	) {}
+		private readonly apiGithubUrl: string = "https://api.github.comm",
+	) { }
 
-	async call(url: string): Promise<Response> {
-		const response = await fetch(url, {
-			headers: {
-				"User-Agent": "github.com/rickferrdev/gitsearch-bot",
-			},
-		});
 
-		return response;
-	}
+	async fetchGateway<T>(endpoint: string): Promise<T | null | Error> {
+		try {
+			const response = await fetch(`${this.apiGithubUrl}${endpoint}`, {
+				headers: {
+					"User-Agent": "github.com/rickferrdev/gitsearch-bot"
+				}
+			})
 
-	async repository<T>(user: string, repository: string): Promise<T | string> {
-		const response = await this.call(
-			`${this.apiGithubUrl}/repos/${user}/${repository}`,
-		);
+			if (response.status === 404) return null
+			if (!response.ok) return new Error("Error processing request")
 
-		if (response.status === 404) return "resource not found";
-		if (!response.ok) return "internal error in api github";
-
-		return response.json() as T;
-	}
-
-	async user<T>(name: string): Promise<T | string> {
-		const response = await this.call(`${this.apiGithubUrl}/users/${name}`);
-
-		if (response.status === 404) return "resource not found";
-		if (!response.ok) return "internal error in api github";
-
-		return response.json() as T;
+			return response.json() as T
+		} catch {
+			return new Error("Error processing request")
+		}
 	}
 }
