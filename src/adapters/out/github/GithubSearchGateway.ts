@@ -2,7 +2,7 @@ import type { GithubGatewayPort } from "../../../application/ports/GithubSearch"
 
 export default class GithubSearchGateway implements GithubGatewayPort {
 	constructor(
-		private readonly apiGithubUrl: string = "https://api.github.comm",
+		private readonly apiGithubUrl: string = "https://api.github.com",
 	) { }
 
 
