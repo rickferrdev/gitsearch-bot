@@ -1,6 +1,6 @@
 import { type Args, Command, type MessageCommand } from "@sapphire/framework";
 import type { Awaitable, Message } from "discord.js";
-import type { GithubSearchPort } from "../../../../application/ports/GithubSearch";
+import type { GithubSearchPorts } from "../../../../application/ports/GithubSearch";
 import GithubSearchUsesCase from "../../../../application/use-cases/GithubSearchUsesCase";
 import MakeEmbedBuilder from "../../../../infrastructure/embeds/MakeEmbedBuilder";
 
@@ -8,7 +8,7 @@ export default class Search extends Command {
 	constructor(
 		ctx: Command.LoaderContext,
 		opts: Command.Options,
-		private readonly search: GithubSearchPort = new GithubSearchUsesCase(),
+		private readonly search: GithubSearchPorts = new GithubSearchUsesCase(),
 		private readonly embed = new MakeEmbedBuilder(),
 	) {
 		super(ctx, {
@@ -35,7 +35,7 @@ export default class Search extends Command {
 				);
 
 			const data = await this.search.repository(user, repository);
-			if (typeof data === "string") return await message.channel.send(data);
+			if (data instanceof Error) return await message.channel.send(data.message);
 
 			return await message.channel.send({
 				embeds: [this.embed.fromRepository(data)],
@@ -43,7 +43,7 @@ export default class Search extends Command {
 		}
 
 		const data = await this.search.user(input);
-		if (typeof data === "string") return message.channel.send(data);
+		if (data instanceof Error) return message.channel.send(data.message);
 
 		return await message.channel.send({
 			embeds: [this.embed.fromUser(data)],
